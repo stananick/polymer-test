@@ -31,6 +31,7 @@ Install [polymer-cli](https://github.com/Polymer/polymer-cli):
     npm install -g polymer-cli
     
 Install bower components
+
     ```
     bower install
     ```
