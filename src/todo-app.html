@@ -1,0 +1,158 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="todo-app">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 10px;
+      }
+      .form-wrapper {
+        display:flex;
+        width:100%;
+      }
+      .form-wrapper paper-input {
+        flex:1;
+        margin-right:10px;
+      }
+      .form-wrapper vaadin-date-picker {
+        width:140px;
+      }
+      paper-button {
+        align-self: flex-end;
+      }
+      .todos {
+        display:flex;
+        align-items: center;
+        margin:10px 0;
+        padding:0 10px;
+      }
+      .todos iron-icon {
+        margin-left:auto;
+      }
+      .todos p {
+        padding:0 10px;
+      }
+      .todos .due {
+        margin-left:auto;
+      }
+      .complete {
+        text-decoration:line-through;
+      }
+    </style>
+
+    <!-- Start Form -->
+    <div class="form-wrapper">
+      <paper-input label="Todo" value="{{todo.text}}" on-keydown="_checkForEnter"></paper-input>
+      <vaadin-date-picker label="Due" value="{{todo.due}}"></vaadin-date-picker>
+      <paper-button raised on-click="_addTodo">
+        <iron-icon icon="check"></iron-icon>
+        Add Todo
+      </paper-button>
+    </div>
+
+    <!-- Start Output -->
+    <template is="dom-repeat" items="{{todos}}">
+      <paper-card class="todos">
+        <paper-checkbox id="checkTodo" on-click="_completeTodo"></paper-checkbox>
+        <p>{{item.text}}</p>
+        <p class="due">{{item.due}}</p>
+        <!-- <paper-fab hidden={{editing}} icon="icons:create" on-tap="_doEdit" mini></paper-fab>
+        <paper-fab hidden={{!editing}} icon="icons:done" on-tap="_doEdit" mini></paper-fab> -->
+        <iron-icon icon="delete" on-tap="_destroyAction"></iron-icon>
+      </paper-card>
+    </template>
+
+    <!-- <paper-card>
+      <template is ="dom-repeat" items="[[completed]]">
+        <paper-listbox class="completedItems">
+          <paper-item class="complete">
+            {{item.text}} {{item.due}}
+            <iron-icon icon="check" item-icon></iron-icon>
+          </paper-item>
+        </paper-listbox>
+      </template>
+    </paper-card> -->
+
+    <!-- <iron-localstorage name="todos" value="{{todos}}" on-iron-localstorage-load-empty="initializeStorage"></iron-localstorage> -->
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'todo-app',
+
+      properties: {
+        todo: {
+          type: Object,
+          value: function() {
+            return {};
+          }
+        },
+        todos: {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        },
+        completed: {
+          type: Array,
+          value: function() {
+            return [];
+          }
+        }
+      },
+
+      _addTodo: function(todo) {
+        this.push('todos', this.todo);
+        this.todo = {};
+        console.log(todos.todo);
+      },
+
+      // _doEdit: function(e) {
+      //   this.editing=!this.editing;
+      // }
+
+      _destroyAction: function(todo) {
+        var index = this.todos.indexOf(todo);
+        this.splice('todos', index, 1);
+        // this.todo = {};
+      },
+
+      _completeTodo: function(todo) {
+        var index = this.todos.indexOf(todo);
+        this.splice('todos', index, 1);
+        this.push('completed', this.todo);
+      },
+
+      _checkForEnter: function(e) {
+        if (e.keyCode === 13) {
+          console.log('enter pushed');
+          this.push('todos', this.todo);
+          this.todo = {};
+        }
+      }
+    });
+  </script>
+</dom-module>

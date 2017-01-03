@@ -1,0 +1,207 @@
+<!--
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<link rel="import" href="../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../bower_components/iron-list/iron-list.html">
+<link rel="import" href="../bower_components/google-map/google-map.html">
+<link rel="import" href="../contact-list.html">
+<!-- <link rel="import" href="todo-app.html"> -->
+<link rel="import" href="todo-app2.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="my-todo-list">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+
+      paper-card {
+        display:flex;
+        align-items: center;
+      }
+      .completed {
+        text-decoration: line-through;
+        font-size:0.9rem;
+      }
+    </style>
+    <!-- <div class="card">
+      <google-map latitude="39.7392" longitude="-104.9903">
+        <google-map-marker latitude="39.7392" longitude="-104.9903" title="Welcome to Denver!"></google-map-marker>
+      </google-map>
+
+      <contact-list></contact-list>
+    </div> -->
+
+    <!-- <div class="card">
+      <todo-app></todo-app>
+    </div> -->
+
+    <!-- <div class="card">
+      <todo-app2></todo-app2>
+    </div> -->
+
+    <div class="card">
+
+      <div class="form">
+        <paper-input label="Task" value="{{todo.task}}"></paper-input>
+        <!-- <vaadin-date-picker label="Due" value="{{todo.due}}"></vaadin-date-picker> -->
+        <paper-button raised on-tap="_addTodo">Add Todo</paper-button>
+      </div>
+
+      <!-- <template is="dom-bind">
+        <iron-list items="{{todos}}" as="item">
+          <template>
+            <div>
+              <p>{{item.task}}</p>
+              <p>{{item.due}}</p>
+            </div>
+          </template>
+        </iron-list>
+      </template> -->
+
+      <template is="dom-repeat" items="{{todos}}">
+        <paper-card class="todos" id="{{item.id}}">
+          <paper-checkbox id="checkTodo" on-click="_completeTodo"></paper-checkbox>
+          <p>{{item.task}}</p>
+          <!-- <p class="due">{{item.due}}</p> -->
+          <iron-icon icon="delete" on-tap="_removeTodo"></iron-icon>
+        </paper-card>
+      </template>
+
+      <h3>Completed</h3>
+
+      <template is="dom-repeat" items="{{completed}}">
+        <paper-card class="completed" id="{{item.id}}">
+          <p><em>{{item.task}}</em></p>
+        </paper-card>
+      </template>
+
+      <p on-tap="_deleteAll">Delete All <iron-icon icon="delete"></iron-icon>
+      </p>
+
+
+      <!-- <vaadin-grid items="{{todos}}">
+        <table>
+          <colgroup>
+            <col name="task" on-tap="_destroyAction">
+            <col name="due">
+          </colgroup>
+        </table>
+      </vaadin-grid> -->
+
+      <input id="checkboxTest" type="checkbox" checked="{{checked}}" on-tap="_checkBoxClicked">
+
+      <paper-checkbox id="checkboxTest" checked="{{checked}}" on-tap="_checkBoxClicked"></paper-checkbox>
+
+    </div>
+
+    <iron-localstorage name="todos" value="{{todos}}" on-iron-localstorage-load-empty="initializeStorage"></iron-localstorage>
+    <iron-localstorage name="completed" value="{{completed}}" on-iron-localstorage-load-empty="initializeStorage"></iron-localstorage>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'my-todo-list',
+
+      properties: {
+        todo: {
+          type: Object,
+          value: function() {
+            return {};
+          }
+        },
+        todos: {
+          type: Array,
+          value: function() {
+            return [];
+          },
+          notify:true,
+        },
+        completed: {
+          type: Array,
+          value: function() {
+            return [];
+          },
+          notify:true,
+        },
+        checked: {
+          type: Boolean,
+          value: true,
+        },
+      },
+      ready: function() {
+        this.users = ['Mark','Tim','Tom'];
+      },
+
+      _addTodo: function() {
+        var copy = Object.assign({}, this.todo);
+        copy.id = this.push('todos', copy);
+        this.todo = {};
+      },
+
+      _removeTodo: function(ev) {
+        var index = this.todos.findIndex( function(item) {
+            return item.id == ev.target.parentElement.id
+        });
+        this.splice('todos', index, 1);
+      },
+
+      // _addTodo: function() {
+      //   this.push('todos', this.todo);
+      //   // this.todo = {};
+      // },
+      //
+      // _destroyAction: function(todo) {
+      //   var index = this.todos.indexOf(todo);
+      //   this.splice('todos', index, 1);
+      //   // this.todo = {};
+      // },
+
+      _completeTodo: function(ev) {
+        //get the object in the array
+        var index = this.todos.findIndex(function(item) {
+            return item.id == ev.target.parentElement.id
+        });
+        //push it to a new array
+        this.push('completed', this.todos[index]);
+        //remove it from the original todo
+        this.splice('todos', index, 1);
+      },
+
+      //Delete all items from array
+      _deleteAll: function() {
+        this.splice('completed', 0, this.completed.length);
+      },
+
+      _checkBoxClicked: function() {
+        this.checked = this.$.checkboxTest.checked;
+      },
+
+      _checkedChanged: function(newValue, oldValue) {
+        console.log('new value' + newValue);
+      },
+
+      initializeStorage: function() {
+        this.todos = [];
+        this.completed = [];
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,74 @@
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/iron-input/iron-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+
+<dom-module id="todo-element">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+        padding: 10px;
+      }
+    </style>
+
+    <paper-material class="todo" elevation="1">
+      <paper-checkbox checked={{completed}}></paper-checkbox>
+      <paper-fab hidden={{editing}} icon="icons:create" on-tap="_doEdit" mini></paper-fab>
+      <paper-fab hidden={{!editing}} icon="icons:done" on-tap="_doEdit" mini></paper-fab>
+      <paper-item hidden="{{editing}}" id="task">{{task}}</paper-item>
+      <paper-input id="edit" hidden="{{!editing}}" value="{{task}}"></paper-input>
+      <paper-item>Created by: <span>{{user}}</span></paper-item>
+      <paper-item>{{time}}</paper-item>
+    </paper-material>
+
+  </template>
+
+  <script>
+    Polymer({
+      is: 'todo-element',
+
+      properties: {
+        user: {
+          type: String,
+          value: ""
+        },
+        task: {
+          type: String,
+          value: 'Hello!'
+        },
+        rid: {
+          type: Number,
+          value: -1
+        },
+        time: {
+          type: String,
+          value: new Date().toLocaleString()
+        },
+        completed: {
+          type: Boolean,
+          value: false,
+          observer: 'compChanged'
+        },
+        editing: {
+          type: Boolean,
+          value: false
+        }
+      },
+
+      compChanged: function(e) {
+        if (e) {
+          this.fire('complete', this);
+        }
+      },
+
+      _doEdit: function(e) {
+        this.editing=!this.editing;
+      }
+    });
+  </script>
+</dom-module>
