@@ -32,9 +32,7 @@ Install [polymer-cli](https://github.com/Polymer/polymer-cli):
     
 Install bower components
 
-    ```
     bower install
-    ```
 
 ##### Initialize project from template
 
